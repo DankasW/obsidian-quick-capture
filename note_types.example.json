@@ -1,0 +1,9 @@
+{
+  "vault_root": "C:\\Users\\YOURNAME\\OneDrive\\My Obsidian Vault",
+  "types": [
+    {"name": "Brza bilješka", "folder": "01 Bilješke", "title_from_first_line": true},
+    {"name": "Dnevnik", "folder": "Dnevnik", "mode": "daily"},
+    {"name": "Ideja", "folder": "Ideje", "title_from_first_line": true},
+    {"name": "Task", "mode": "append", "target_file": "TODO.md", "line_format": "- [ ] {text}", "supports_due_date": true}
+  ]
+}
