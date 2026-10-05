@@ -1,31 +1,34 @@
 # Obsidian Quick Capture
 
-Mali alat za Windows 11. Pritisneš **Ctrl+Space** bilo gdje i otvori se prozor
-za brzi upis bilješke, koja se sprema direktno u tvoj Obsidian vault.
+A small tool for Windows 11. Press **Ctrl+Space** anywhere and a small window
+opens for jotting down a quick note, saved straight into your Obsidian vault.
 
-Napisano u čistom Python stdlibu (tkinter + ctypes), bez dodatnih paketa.
+Written in plain Python stdlib (tkinter + ctypes), no extra packages.
 
-## Vrste bilješki
+## Note types
 
-- **Brza bilješka** (Ctrl+B) — novi fajl, naziv = prva linija teksta
-- **Dnevnik** (Ctrl+D) — dodaje redak u tvoju today-notu (`Dnevnik/GODINA/GODINA-MM-DD.md`)
-- **Ideja** (Ctrl+I) — isto kao Brza bilješka, drugi folder
-- **Task** (Ctrl+T) — dodaje `- [ ] tekst` u `TODO.md`, uz opcionalni rok (date picker)
+- **Quick note** (Ctrl+Q) — new file, named after the first line of text
+- **Journal** (Ctrl+J) — appends a line to today's daily note (`Journal/YEAR/YEAR-MM-DD.md`)
+- **Idea** (Ctrl+I) — same as Quick note, different folder
+- **Task** (Ctrl+T) — appends `- [ ] text` to `TODO.md`, with an optional due date (date picker)
 
-Dodavanje nove vrste = jedan unos u `note_types.json`, kod se ne mijenja.
+These are the types in `note_types.example.json`. Each type's keyboard shortcut
+is just Ctrl + its first letter, so adding a new type (one entry in
+`note_types.json`, no code changes) also gives it a shortcut automatically
+(pick a name with a first letter that isn't already used).
 
-## Postavljanje
+## Setup
 
-1. Kopiraj `note_types.example.json` u `note_types.json`
-2. Uredi `vault_root` i nazive foldera da odgovaraju tvom vaultu
-   (`vault_root` je samo rezerva — alat sam prepoznaje trenutno otvoren
-   vault iz Obsidianovog `obsidian.json`)
-3. Pokreni `python capture.py`
-4. Za auto-pokretanje pri loginu, napravi prečac u Startup folderu
-   (`shell:startup`) prema `pythonw.exe capture.py`
+1. Copy `note_types.example.json` to `note_types.json`
+2. Edit `vault_root` and folder names to match your vault
+   (`vault_root` is just a fallback — the tool auto-detects your currently
+   open vault from Obsidian's own `obsidian.json`)
+3. Run `python capture.py`
+4. To auto-start at login, add a shortcut in the Startup folder
+   (`shell:startup`) pointing to `pythonw.exe capture.py`
 
-## Ostalo
+## Notes
 
-- Ctrl+Space ima fallback na Ctrl+Alt+Space ako je zauzet
-- Prozor prati Windows temu (dark/light) i lagano je proziran
-- `python test_capture.py` pokreće self-check testove
+- Ctrl+Space falls back to Ctrl+Alt+Space if it's already taken
+- The window follows the Windows theme (dark/light) and is slightly translucent
+- `python test_capture.py` runs the self-check tests
