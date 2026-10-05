@@ -12,6 +12,7 @@ import sys
 import tkinter as tk
 from datetime import datetime, timedelta
 
+import calendar_picker
 import theme
 import vault
 
@@ -155,9 +156,23 @@ def open_capture_window(note_types, vault_root):
     due_entry = tk.Entry(
         due_frame, textvariable=due_date_var, width=12, bg=c["field_bg"], fg=c["fg"],
         insertbackground=c["fg"], relief="flat", highlightthickness=1,
-        highlightbackground=c["accent"], highlightcolor=c["accent"],
+        highlightbackground=c["accent"], highlightcolor=c["accent"], state="readonly",
+        readonlybackground=c["field_bg"],
     )
     due_entry.pack(side="left", padx=(0, 8))
+
+    def open_calendar(event=None):
+        try:
+            initial = datetime.strptime(due_date_var.get(), "%Y-%m-%d").date()
+        except ValueError:
+            initial = None
+        x = due_entry.winfo_rootx() + due_entry.winfo_width() + 8
+        y = due_entry.winfo_rooty()
+        chosen = calendar_picker.pick_date(win, initial, x=x, y=y)
+        if chosen:
+            due_date_var.set(chosen)
+
+    due_entry.bind("<Button-1>", open_calendar)
     today = datetime.now().date()
     for label, value in (
         ("Danas", today),
