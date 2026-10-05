@@ -10,7 +10,8 @@ Written in plain Python stdlib (tkinter + ctypes), no extra packages.
 - **Quick note** (Ctrl+Q) — new file, named after the first line of text
 - **Journal** (Ctrl+J) — appends a line to today's daily note (`Journal/YEAR/YEAR-MM-DD.md`)
 - **Idea** (Ctrl+I) — same as Quick note, different folder
-- **Task** (Ctrl+T) — appends `- [ ] text` to `TODO.md`, with an optional due date (date picker)
+- **Task** (Ctrl+T) — appends `- [ ] text` to `TODO.md`, with an optional due date
+  (click the date field for a small calendar, or use the Today / Tomorrow / In a week buttons)
 
 These are the types in `note_types.example.json`. Each type's keyboard shortcut
 is just Ctrl + its first letter, so adding a new type (one entry in
@@ -30,5 +31,9 @@ is just Ctrl + its first letter, so adding a new type (one entry in
 ## Notes
 
 - Ctrl+Space falls back to Ctrl+Alt+Space if it's already taken
-- The window follows the Windows theme (dark/light) and is slightly translucent
+- The window follows the Windows theme (dark/light), has rounded corners, no
+  minimize/maximize/close buttons, and is slightly translucent
+- Ctrl+Backspace deletes the previous word while typing
+- Ctrl+Enter saves and clears the window for the next note, instead of closing it
+  (Esc closes it)
 - `python test_capture.py` runs the self-check tests
