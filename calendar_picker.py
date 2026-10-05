@@ -68,6 +68,8 @@ def pick_date(parent, initial=None, x=None, y=None):
         relief="flat", borderwidth=0, padx=8,
     ).pack(side="left")
 
+    win.bind("<Escape>", lambda event: win.destroy())
+
     grid_frame.pack(padx=8, pady=(0, 8))
     render()
     win.update_idletasks()

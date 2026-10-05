@@ -5,6 +5,9 @@ opens for jotting down a quick note, saved straight into your Obsidian vault.
 
 Written in plain Python stdlib (tkinter + ctypes), no extra packages.
 
+![Main window](assets/screenshot-main.png)
+![Task with calendar picker](assets/screenshot-calendar.png)
+
 ## Note types
 
 - **Quick note** (Ctrl+Q) — new file, named after the first line of text
