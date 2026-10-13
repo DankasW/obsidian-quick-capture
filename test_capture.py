@@ -30,9 +30,9 @@ def demo():
         assert path == Path(tmp) / "TODO.md"
         lines = path.read_text(encoding="utf-8").splitlines()
         assert lines == [
-            "- [ ] Nazovi vodoinstalatera ➕ 2026-10-05",
-            "- [ ] Druga stavka 📅 2026-12-01",
             "- [ ] Treća, neispravan rok ➕ 2026-10-05",
+            "- [ ] Druga stavka 📅 2026-12-01",
+            "- [ ] Nazovi vodoinstalatera ➕ 2026-10-05",
         ], lines
 
         daily_type = {"name": "Dnevnik", "folder": "Dnevnik", "mode": "daily"}
@@ -46,6 +46,35 @@ def demo():
         assert path.name == "Ideja za vikend posjetiti dida.md", path.name
         path2 = save_note(tmp, idea_type, "Ideja za vikend: posjetiti dida?\nDrugi pokušaj.", now=now)
         assert path2.name == "Ideja za vikend posjetiti dida (2).md", path2.name
+
+        todo_path = Path(tmp) / "TODO.md"
+        todo_path.write_text("\n".join([
+            "- [ ] Vrlo kasni zadatak 📅 2026-09-01",
+            "- [ ] Manje kasni zadatak 📅 2026-09-20",
+            "- [x] Gotov ali kasni 📅 2026-08-01",
+            "- [ ] Nije još dospio 📅 2026-12-01",
+            "- [ ] Bez roka",
+            "- [ ] Treći najkasniji 📅 2026-09-25",
+            "- [ ] Četvrti kasni (van top 3) 📅 2026-09-28",
+        ]), encoding="utf-8")
+        save_note(tmp, task_type, "- [ ] Novi zadatak", now=now)
+        lines = todo_path.read_text(encoding="utf-8").splitlines()
+        assert lines == [
+            "❗ - [ ] Vrlo kasni zadatak 📅 2026-09-01 — Probio rok!",
+            "❗ - [ ] Manje kasni zadatak 📅 2026-09-20 — Probio rok!",
+            "❗ - [ ] Treći najkasniji 📅 2026-09-25 — Probio rok!",
+            "- [ ] Novi zadatak ➕ 2026-10-05",
+            "- [ ] Četvrti kasni (van top 3) 📅 2026-09-28",
+            "- [x] Gotov ali kasni 📅 2026-08-01",
+            "- [ ] Nije još dospio 📅 2026-12-01",
+            "- [ ] Bez roka",
+        ], lines
+
+        # drugi dodani zadatak ne smije duplirati oznake na već označenim redcima
+        save_note(tmp, task_type, "- [ ] Još jedan", now=now)
+        lines2 = todo_path.read_text(encoding="utf-8").splitlines()
+        assert lines2.count("❗ - [ ] Vrlo kasni zadatak 📅 2026-09-01 — Probio rok!") == 1
+        assert "- [ ] Još jedan ➕ 2026-10-05" in lines2
 
         cfg = Path(tmp) / "obsidian.json"
         cfg.write_text(json.dumps({"vaults": {

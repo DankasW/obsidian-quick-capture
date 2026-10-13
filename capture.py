@@ -24,6 +24,11 @@ VK_SPACE = 0x20
 WM_HOTKEY = 0x0312
 ERROR_ALREADY_EXISTS = 183
 INVALID_FILENAME_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+OVERDUE_MARK = "❗ "
+OVERDUE_SUFFIX = " — Probio rok!"
+OVERDUE_LIMIT = 3
+DUE_DATE_RE = re.compile(r"📅 (\d{4}-\d{2}-\d{2})")
+DONE_RE = re.compile(r"-\s*\[x\]", re.IGNORECASE)
 
 user32 = ctypes.windll.user32
 kernel32 = ctypes.windll.kernel32
@@ -91,6 +96,39 @@ def append_daily(vault_root, note_type, text, now):
     return path
 
 
+def strip_overdue_flag(line):
+    if line.startswith(OVERDUE_MARK):
+        line = line[len(OVERDUE_MARK):]
+    if line.endswith(OVERDUE_SUFFIX):
+        line = line[: -len(OVERDUE_SUFFIX)]
+    return line
+
+
+def parse_due_date(line):
+    match = DUE_DATE_RE.search(line)
+    if not match:
+        return None
+    try:
+        return datetime.strptime(match.group(1), "%Y-%m-%d").date()
+    except ValueError:
+        return None
+
+
+def split_overdue(lines, today):
+    """Vrati (do OVERDUE_LIMIT najkasnijih, s oznakom; ostatak, bez oznake)."""
+    overdue, rest = [], []
+    for raw in lines:
+        plain = strip_overdue_flag(raw)
+        due = parse_due_date(plain)
+        if due and due < today and not DONE_RE.search(plain):
+            overdue.append((due, plain))
+        else:
+            rest.append(plain)
+    overdue.sort(key=lambda pair: pair[0])
+    flagged = [f"{OVERDUE_MARK}{line}{OVERDUE_SUFFIX}" for _, line in overdue[:OVERDUE_LIMIT]]
+    return flagged, [line for _, line in overdue[OVERDUE_LIMIT:]] + rest
+
+
 def append_line(vault_root, note_type, text, now, due_date=""):
     path = pathlib.Path(vault_root) / note_type["target_file"]
     one_liner = " ".join(text.split())
@@ -103,8 +141,15 @@ def append_line(vault_root, note_type, text, now, due_date=""):
             line += f" ➕ {now:%Y-%m-%d}"
     else:
         line += f" ➕ {now:%Y-%m-%d}"
-    with path.open("a", encoding="utf-8") as f:
-        f.write(line + "\n")
+
+    if not note_type.get("supports_due_date"):
+        with path.open("a", encoding="utf-8") as f:
+            f.write(line + "\n")
+        return path
+
+    existing = [l for l in (path.read_text(encoding="utf-8").splitlines() if path.exists() else []) if l.strip()]
+    top, rest = split_overdue(existing, now.date())
+    path.write_text("\n".join(top + [line] + rest) + "\n", encoding="utf-8")
     return path
 
 
