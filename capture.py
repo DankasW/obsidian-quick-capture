@@ -29,6 +29,7 @@ OVERDUE_SUFFIX = " — Probio rok!"
 OVERDUE_LIMIT = 3
 DUE_DATE_RE = re.compile(r"📅 (\d{4}-\d{2}-\d{2})")
 DONE_RE = re.compile(r"-\s*\[x\]", re.IGNORECASE)
+CHECKBOX_RE = re.compile(r"^(\s*-\s*\[.\]\s*)")
 
 user32 = ctypes.windll.user32
 kernel32 = ctypes.windll.kernel32
@@ -97,11 +98,21 @@ def append_daily(vault_root, note_type, text, now):
 
 
 def strip_overdue_flag(line):
-    if line.startswith(OVERDUE_MARK):
-        line = line[len(OVERDUE_MARK):]
     if line.endswith(OVERDUE_SUFFIX):
         line = line[: -len(OVERDUE_SUFFIX)]
+    match = CHECKBOX_RE.match(line)
+    if match and line[match.end():].startswith(OVERDUE_MARK):
+        line = line[: match.end()] + line[match.end() + len(OVERDUE_MARK):]
     return line
+
+
+def flag_overdue(line):
+    """Umetne oznaku odmah iza checkboxa, ne ispred njega — inače Dataview/Tasks
+    plugin više ne prepoznaje redak kao zadatak jer checkbox mora biti prvi."""
+    match = CHECKBOX_RE.match(line)
+    if match:
+        return line[: match.end()] + OVERDUE_MARK + line[match.end():] + OVERDUE_SUFFIX
+    return OVERDUE_MARK + line + OVERDUE_SUFFIX
 
 
 def parse_due_date(line):
@@ -125,7 +136,7 @@ def split_overdue(lines, today):
         else:
             rest.append(plain)
     overdue.sort(key=lambda pair: pair[0])
-    flagged = [f"{OVERDUE_MARK}{line}{OVERDUE_SUFFIX}" for _, line in overdue[:OVERDUE_LIMIT]]
+    flagged = [flag_overdue(line) for _, line in overdue[:OVERDUE_LIMIT]]
     return flagged, [line for _, line in overdue[OVERDUE_LIMIT:]] + rest
 
 

@@ -60,20 +60,23 @@ def demo():
         save_note(tmp, task_type, "- [ ] Novi zadatak", now=now)
         lines = todo_path.read_text(encoding="utf-8").splitlines()
         assert lines == [
-            "❗ - [ ] Vrlo kasni zadatak 📅 2026-09-01 — Probio rok!",
-            "❗ - [ ] Manje kasni zadatak 📅 2026-09-20 — Probio rok!",
-            "❗ - [ ] Treći najkasniji 📅 2026-09-25 — Probio rok!",
+            "- [ ] ❗ Vrlo kasni zadatak 📅 2026-09-01 — Probio rok!",
+            "- [ ] ❗ Manje kasni zadatak 📅 2026-09-20 — Probio rok!",
+            "- [ ] ❗ Treći najkasniji 📅 2026-09-25 — Probio rok!",
             "- [ ] Novi zadatak ➕ 2026-10-05",
             "- [ ] Četvrti kasni (van top 3) 📅 2026-09-28",
             "- [x] Gotov ali kasni 📅 2026-08-01",
             "- [ ] Nije još dospio 📅 2026-12-01",
             "- [ ] Bez roka",
         ], lines
+        # checkbox ostaje prvi na retku (bitno za Dataview/Tasks plugin)
+        for l in lines[:3]:
+            assert l.startswith("- [ ] "), l
 
         # drugi dodani zadatak ne smije duplirati oznake na već označenim redcima
         save_note(tmp, task_type, "- [ ] Još jedan", now=now)
         lines2 = todo_path.read_text(encoding="utf-8").splitlines()
-        assert lines2.count("❗ - [ ] Vrlo kasni zadatak 📅 2026-09-01 — Probio rok!") == 1
+        assert lines2.count("- [ ] ❗ Vrlo kasni zadatak 📅 2026-09-01 — Probio rok!") == 1
         assert "- [ ] Još jedan ➕ 2026-10-05" in lines2
 
         cfg = Path(tmp) / "obsidian.json"
