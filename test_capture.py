@@ -22,11 +22,11 @@ def demo():
 
         task_type = {
             "name": "Task", "mode": "append", "target_file": "TODO.md",
-            "line_format": "- [ ] {text}", "supports_due_date": True,
+            "line_format": "{text}", "supports_due_date": True, "placeholder": "- [ ] ",
         }
-        path = save_note(tmp, task_type, "Nazovi\nvodoinstalatera  ", now=now)
-        save_note(tmp, task_type, "Druga stavka", now=now, due_date="2026-12-01")
-        save_note(tmp, task_type, "Treća, neispravan rok", now=now, due_date="nije datum")
+        path = save_note(tmp, task_type, "- [ ] Nazovi\nvodoinstalatera  ", now=now)
+        save_note(tmp, task_type, "- [ ] Druga stavka", now=now, due_date="2026-12-01")
+        save_note(tmp, task_type, "- [ ] Treća, neispravan rok", now=now, due_date="nije datum")
         assert path == Path(tmp) / "TODO.md"
         lines = path.read_text(encoding="utf-8").splitlines()
         assert lines == [

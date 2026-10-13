@@ -195,6 +195,25 @@ def open_capture_window(note_types, vault_root):
     selected.trace_add("write", update_due_visibility)
     update_due_visibility()
 
+    placeholder_state = {"text": ""}
+
+    def update_prefill(*_args):
+        note_type = next(nt for nt in note_types if nt["name"] == selected.get())
+        current = text_box.get("1.0", "end-1c")
+        if current == placeholder_state["text"]:
+            text_box.delete("1.0", "end")
+            current = ""
+        new_placeholder = note_type.get("placeholder", "")
+        if new_placeholder and not current:
+            text_box.insert("1.0", new_placeholder)
+            text_box.mark_set("insert", "end")
+            placeholder_state["text"] = new_placeholder
+        else:
+            placeholder_state["text"] = ""
+
+    selected.trace_add("write", update_prefill)
+    update_prefill()
+
     def grab_focus():
         win.lift()
         ctypes.windll.user32.SetForegroundWindow(win.winfo_id())

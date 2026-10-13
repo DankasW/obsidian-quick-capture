@@ -4,6 +4,6 @@
     {"name": "Quick note", "folder": "Quick Notes", "title_from_first_line": true},
     {"name": "Journal", "folder": "Journal", "mode": "daily"},
     {"name": "Idea", "folder": "Ideas", "title_from_first_line": true},
-    {"name": "Task", "mode": "append", "target_file": "TODO.md", "line_format": "- [ ] {text}", "supports_due_date": true}
+    {"name": "Task", "mode": "append", "target_file": "TODO.md", "line_format": "{text}", "supports_due_date": true, "placeholder": "- [ ] "}
   ]
 }
